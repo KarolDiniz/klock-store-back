@@ -2,6 +2,9 @@
 
 Este é o backend da aplicação **Klock Store** lembrando que tem o frontend. Este é um sistema de gestão de pedidos, clientes e itens. Este projeto utiliza **Java 17** e o framework **Spring Boot** para implementar os endpoints RESTful.
 
+# Vídeo demonstrativo
+adicionar link
+
 ## Funcionalidades
 
 A API oferece CRUD completo para:
@@ -65,7 +68,9 @@ Execute (rode) o projeto na sua máquina.
 
 ### Passo 5: Testando da API
 
-A API possui os seguintes endpoints:
+**Teste a API utilizando preferencialmente o front-end**, mas você também pode usar Postman ou o Swagger.
+
+**A API possui os seguintes endpoints:**
 
 - **Clientes**: 
   - GET /api/clientes
