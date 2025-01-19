@@ -1,5 +1,6 @@
 package com.online.KlockStore.presentation.controller;
 
+import com.online.KlockStore.business.exception.item.ItemNotFoundException;
 import com.online.KlockStore.model.entities.Item;
 import com.online.KlockStore.business.service.item.ItemService;
 import org.springframework.http.HttpStatus;
@@ -41,12 +42,15 @@ public class ItemController {
     @PutMapping("/{id}")
     public ResponseEntity<Item> atualizarItem(@PathVariable Long id, @RequestBody Item itemAtualizado) {
         try {
-            Item item = itemService.salvarItem(itemAtualizado);
+            Item item = itemService.atualizarItem(id, itemAtualizado);
             return ResponseEntity.ok(item);
-        } catch (RuntimeException e) {
+        } catch (ItemNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirItem(@PathVariable Long id) {

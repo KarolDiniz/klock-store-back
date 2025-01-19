@@ -44,6 +44,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer atualizarCliente(Long id, Customer clienteAtualizado) {
+        Customer clienteExistente = buscarPorId(id);
+        if (clienteAtualizado.getEmail() != null) {
+            clienteExistente.setEmail(clienteAtualizado.getEmail());
+        }
+        return clienteRepository.save(clienteExistente);
+    }
+
+    @Override
     public void excluirCliente(@NotNull Long id) {
         Customer cliente = buscarPorId(id);
         clienteRepository.delete(cliente);
