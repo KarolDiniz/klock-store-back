@@ -56,6 +56,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Item atualizarItem(Long id, Item itemAtualizado) {
+        validarId(id);
+        Item itemExistente = buscarPorId(id);
+
+        if (itemAtualizado.getNome() != null) {
+            itemExistente.setNome(itemAtualizado.getNome());
+        }
+
+        return itemRepository.save(itemExistente);
+    }
+
+    @Override
     public void excluirItem(Long id) {
         validarId(id);
         Item item = buscarPorId(id);

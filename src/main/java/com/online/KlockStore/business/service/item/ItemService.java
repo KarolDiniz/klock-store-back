@@ -11,5 +11,7 @@ public interface ItemService {
 
     Item salvarItem(Item item);
 
+    Item atualizarItem(Long id, Item itemAtualizado);
+
     void excluirItem(Long id);
 }

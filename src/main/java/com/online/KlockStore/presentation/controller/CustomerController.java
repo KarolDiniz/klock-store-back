@@ -41,7 +41,7 @@ public class CustomerController {
     @PutMapping("/{id}")
     public ResponseEntity<Customer> atualizarCliente(@PathVariable Long id, @RequestBody Customer clienteAtualizado) {
         try {
-            Customer cliente = clienteService.salvarCliente(clienteAtualizado);
+            Customer cliente = clienteService.atualizarCliente(id, clienteAtualizado);
             return ResponseEntity.ok(cliente);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

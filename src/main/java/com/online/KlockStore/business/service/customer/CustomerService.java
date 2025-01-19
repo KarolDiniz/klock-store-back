@@ -11,5 +11,7 @@ public interface CustomerService {
 
     Customer salvarCliente(Customer cliente);
 
+    Customer atualizarCliente(Long id, Customer clienteAtualizado);
+
     void excluirCliente(Long id);
 }
