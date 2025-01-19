@@ -1,4 +1,5 @@
 package com.online.KlockStore.business.service.order.impl;
+
 import com.online.KlockStore.business.exception.order.OrderNotFoundException;
 import com.online.KlockStore.business.service.order.OrderService;
 import com.online.KlockStore.model.entities.Customer;
@@ -8,25 +9,31 @@ import com.online.KlockStore.model.repository.OrderRepository;
 import com.online.KlockStore.business.service.customer.CustomerService;
 import com.online.KlockStore.business.service.item.ItemService;
 import com.online.KlockStore.business.service.order.utils.OrderProcessingService;
+import com.online.KlockStore.business.service.order.utils.OrderValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
-    private final CustomerService clienteService;
+    private final CustomerService customerService;
     private final ItemService itemService;
-    private final OrderProcessingService pedidoProcessingService;
+    private final OrderProcessingService orderProcessingService;
+    private final OrderValidator orderValidator;
 
     public OrderServiceImpl(OrderRepository orderRepository,
-                            CustomerService clienteService,
+                            CustomerService customerService,
                             ItemService itemService,
-                            OrderProcessingService pedidoProcessingService) {
+                            OrderProcessingService orderProcessingService,
+                            OrderValidator orderValidator) {
         this.orderRepository = orderRepository;
-        this.clienteService = clienteService;
+        this.customerService = customerService;
         this.itemService = itemService;
-        this.pedidoProcessingService = pedidoProcessingService;
+        this.orderProcessingService = orderProcessingService;
+        this.orderValidator = orderValidator;
     }
 
     @Override
@@ -41,43 +48,39 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order criarPedido(Order pedido) {
-        if (pedido.getCliente() == null) {
-            throw new OrderNotFoundException("Itens não podem ser nulos ou vazios");
-        }
-
-        Customer cliente = clienteService.buscarPorId(pedido.getCliente().getId());
-        if (cliente == null) {
-            throw new OrderNotFoundException("Itens não podem ser nulos ou vazios");
-        }
-        pedido.setCliente(cliente);
-
-        if (pedido.getItems() == null || pedido.getItems().isEmpty()) {
-            throw new OrderNotFoundException("Itens não podem ser nulos ou vazios");
-        }
-
-        List<Item> itens = itemService.associarItens(pedido.getItems());
-        pedido.setItems(itens);
-
-        pedidoProcessingService.processarPedido(pedido);
-        return orderRepository.save(pedido);
+    public Order criarPedido(Order order) {
+        orderValidator.validar(order);
+        Customer customer = customerService.buscarPorId(order.getCliente().getId());
+        order.setCliente(customer);
+        List<Item> items = itemService.associarItens(order.getItems());
+        order.setItems(items);
+        orderProcessingService.processarPedido(order);
+        return orderRepository.save(order);
     }
 
-
     @Override
-    public Order atualizarPedido(Long id, Order pedidoAtualizado) {
-        Order pedidoExistente = buscarPorId(id);
-        Customer cliente = clienteService.buscarPorId(pedidoAtualizado.getCliente().getId());
-        pedidoExistente.setCliente(cliente);
-        List<Item> itens = itemService.associarItens(pedidoAtualizado.getItems());
-        pedidoExistente.setItems(itens);
-        pedidoProcessingService.processarPedido(pedidoExistente);
-        return orderRepository.save(pedidoExistente);
+    public Order atualizarPedido(Long id, Order updatedOrder) {
+        Order existingOrder = buscarPorId(id);
+        orderValidator.validar(updatedOrder);
+        atualizarDadosPedido(existingOrder, updatedOrder);
+        processarPedido(existingOrder);
+        return orderRepository.save(existingOrder);
     }
 
     @Override
     public void excluirPedido(Long id) {
-        Order pedido = buscarPorId(id);
-        orderRepository.delete(pedido);
+        Order order = buscarPorId(id);
+        orderRepository.delete(order);
+    }
+
+    private void atualizarDadosPedido(Order existingOrder, Order updatedOrder) {
+        Customer customer = customerService.buscarPorId(updatedOrder.getCliente().getId());
+        existingOrder.setCliente(customer);
+        List<Item> items = itemService.associarItens(updatedOrder.getItems());
+        existingOrder.setItems(items);
+    }
+
+    private void processarPedido(Order order) {
+        orderProcessingService.processarPedido(order);
     }
 }
