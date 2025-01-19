@@ -1,6 +1,8 @@
 package com.online.KlockStore.model.entities;
 
 import jakarta.persistence.*;
+
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Entity
@@ -11,9 +13,16 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O nome do item é obrigatório.")
     private String nome;
+
+    @Min(value = 0, message = "O preço do item deve ser maior ou igual a zero.")
     private double preco;
+
+    @Min(value = 0, message = "A quantidade do item deve ser maior ou igual a zero.")
     private int quantidade;
+
+    @Min(value = 0, message = "O estoque do item deve ser maior ou igual a zero.")
     private int estoque;
 
     public Item() {

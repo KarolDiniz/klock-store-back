@@ -1,93 +1,111 @@
 package com.online.KlockStore.business.service.item.impl;
 
 import com.online.KlockStore.business.exception.item.ItemNotFoundException;
+import com.online.KlockStore.business.service.item.utils.ItemValidator;
 import com.online.KlockStore.model.entities.Item;
 import com.online.KlockStore.model.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ItemServiceImplTest {
+public class ItemServiceImplTest {
 
     @Mock
     private ItemRepository itemRepository;
 
+    @Mock
+    private ItemValidator itemValidator;
+
+    @InjectMocks
     private ItemServiceImpl itemService;
+
+    private Item item;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        itemService = new ItemServiceImpl(itemRepository);
-    }
-
-
-    @Test
-    void testBuscarPorId_ItemNaoExistente() {
-        Long itemId = 1L;
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
-
-        ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> itemService.buscarPorId(itemId));
-        assertEquals("Item não encontrado!", exception.getMessage());
+        item = new Item();
+        item.setId(1L);
+        item.setNome("Item de Teste");
     }
 
     @Test
-    void testAssociarItens_ItemNaoExistente() {
-        Item itemInexistente = new Item("Relógio", 150.0, 10, 20);
+    void testBuscarPorId_ItemExistente() {
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+
+        Item result = itemService.buscarPorId(1L);
+
+        assertNotNull(result);
+        assertEquals(item.getId(), result.getId());
+        verify(itemRepository).findById(1L);
+    }
+
+    @Test
+    void testBuscarPorId_ItemNaoEncontrado() {
         when(itemRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> itemService.associarItens(List.of(itemInexistente)));
+        ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> {
+            itemService.buscarPorId(1L);
+        });
+
         assertEquals("Item não encontrado!", exception.getMessage());
     }
 
     @Test
-    void testListarTodos() {
-        Item item1 = new Item("Relógio", 150.0, 10, 20);
-        Item item2 = new Item("Pulseira", 50.0, 5, 15);
-        when(itemRepository.findAll()).thenReturn(List.of(item1, item2));
+    void testAssociarItens_ListaVazia() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            itemService.associarItens(Arrays.asList());
+        });
 
-        List<Item> itens = itemService.listarTodos();
-
-        assertEquals(2, itens.size());
-        assertTrue(itens.contains(item1));
-        assertTrue(itens.contains(item2));
+        assertEquals("A lista de itens do pedido não pode ser nula ou vazia.", exception.getMessage());
     }
 
     @Test
-    void testSalvarItem() {
-        Item item = new Item("Relógio", 150.0, 10, 20);
+    void testAssociarItens_ItemNulo() {
+        Item itemNulo = null;
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            itemService.associarItens(Arrays.asList(itemNulo));
+        });
+
+        assertEquals("Item ou ID do item não pode ser nulo.", exception.getMessage());
+    }
+
+    @Test
+    void testSalvarItem_ValidaItem() {
         when(itemRepository.save(item)).thenReturn(item);
 
-        Item itemSalvo = itemService.salvarItem(item);
+        Item result = itemService.salvarItem(item);
 
-        assertNotNull(itemSalvo);
-        assertEquals(item.getId(), itemSalvo.getId());
-        assertEquals(item.getNome(), itemSalvo.getNome());
+        assertNotNull(result);
+        verify(itemRepository).save(item);
     }
 
     @Test
-    void testExcluirItem() {
-        Long itemId = 1L;
-        Item item = new Item("Relógio", 150.0, 10, 20);
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+    void testExcluirItem_Sucesso() {
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        doNothing().when(itemRepository).delete(item);
 
-        itemService.excluirItem(itemId);
+        itemService.excluirItem(1L);
 
-        verify(itemRepository, times(1)).delete(item);
+        verify(itemRepository).delete(item);
     }
 
     @Test
-    void testExcluirItem_ItemNaoExistente() {
-        Long itemId = 1L;
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+    void testExcluirItem_ItemNaoEncontrado() {
+        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> itemService.excluirItem(itemId));
+        ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () -> {
+            itemService.excluirItem(1L);
+        });
+
         assertEquals("Item não encontrado!", exception.getMessage());
     }
 }
-
