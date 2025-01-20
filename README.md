@@ -3,7 +3,7 @@
 Este é o backend da aplicação **Klock Store** lembrando que tem o frontend. Este é um sistema de gestão de pedidos, clientes e itens. Este projeto utiliza **Java 17** e o framework **Spring Boot** para implementar os endpoints RESTful.
 
 # Vídeo demonstrativo
-adicionar link
+https://youtu.be/HC1QFjFxl-w
 
 ## Funcionalidades
 
@@ -29,6 +29,8 @@ A API oferece CRUD completo para:
 
 ## Como Rodar o Projeto
 
+---
+
 ### Passo 1: Clonar o Repositório
 
 Clone este repositório para a sua máquina local:
@@ -38,6 +40,8 @@ git clone https://github.com/KarolDiniz/klock-store-backend.git
 cd klock-store-backend
 ```
 Ou faça o download do projeto em formato zip e extraia o conteúdo.
+
+---
 
 ### Passo 2: Configuração do Banco de Dados
 
@@ -54,6 +58,8 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 ```
 Substitua seu_usuario e sua_senha pelas credenciais corretas do seu banco de dados.
 
+---
+
 ### Passo 3:  Instalar Dependências
 
 Com o Maven instalado, rode o seguinte comando para baixar as dependências:
@@ -61,10 +67,13 @@ Com o Maven instalado, rode o seguinte comando para baixar as dependências:
 ```bash
 mvn clean install
 ```
+---
 
 ### Passo 4: Rodar o Projeto
 
 Execute (rode) o projeto na sua máquina.
+
+---
 
 ### Passo 5: Testando da API
 
@@ -132,9 +141,26 @@ Exemplo do corpo da requisição (POST):
 
 Execute o backend junto com o frontend, você pode clonar o repositório do frontend e seguir os passos abaixo:
 
-**Repositório do Frontend:** https://github.com/KarolDiniz/klock-store-front
-
+**Repositório do Frontend:** 
+https://github.com/KarolDiniz/klock-store-front
+---
 ### Documentação com o swagger:
 documentação da API no Swagger em http://localhost:8080/swagger-ui/index.html
+
+---
+
+## 👩‍💻 Desenvolvido por
+Karoline Diniz Ramos
+
+---
+
+## 🔗 Links adicionais
+
+- **Repositório do frontend**: https://github.com/KarolDiniz/klock-store-front
+
+
+- **Tecnologias utilizadas**:
+  - **Frontend**: React, CSS, HTML
+  - **Backend**: Spring Boot, Java  
 
 
