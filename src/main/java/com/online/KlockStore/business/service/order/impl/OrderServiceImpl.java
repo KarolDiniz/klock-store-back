@@ -9,11 +9,9 @@ import com.online.KlockStore.model.repository.OrderRepository;
 import com.online.KlockStore.business.service.customer.CustomerService;
 import com.online.KlockStore.business.service.item.ItemService;
 import com.online.KlockStore.business.service.order.utils.OrderProcessingService;
-import com.online.KlockStore.business.service.order.utils.OrderValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -46,10 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order criarPedido(Order order) {
-        Customer customer = customerService.buscarPorId(order.getCliente().getId());
-        order.setCliente(customer);
-        List<Item> items = itemService.associarItens(order.getItems());
-        order.setItems(items);
+        configurarPedido(order);
         processarPedido(order);
         return orderRepository.save(order);
     }
@@ -57,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order atualizarPedido(Long id, Order updatedOrder) {
         Order existingOrder = buscarPorId(id);
-        atualizarDadosPedido(existingOrder, updatedOrder);
+        configurarPedidoAtualizado(existingOrder, updatedOrder);
         processarPedido(existingOrder);
         return orderRepository.save(existingOrder);
     }
@@ -68,11 +63,17 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-    private void atualizarDadosPedido(Order existingOrder, Order updatedOrder) {
-        Customer customer = customerService.buscarPorId(updatedOrder.getCliente().getId());
-        existingOrder.setCliente(customer);
-        List<Item> items = itemService.associarItens(updatedOrder.getItems());
-        existingOrder.setItems(items);
+    private void configurarPedido(Order order) {
+        Customer customer = customerService.buscarPorId(order.getCliente().getId());
+        order.setCliente(customer);
+        List<Item> items = itemService.associarItens(order.getItems());
+        order.setItems(items);
+    }
+
+    private void configurarPedidoAtualizado(Order existingOrder, Order updatedOrder) {
+        configurarPedido(updatedOrder);
+        existingOrder.setCliente(updatedOrder.getCliente());
+        existingOrder.setItems(updatedOrder.getItems());
     }
 
     private void processarPedido(Order order) {
