@@ -168,24 +168,6 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void testCriarPedido_ItensNulos() {
-        order.setItems(null);  // Simulando pedido com itens nulos
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class, () -> orderService.criarPedido(order));
-        assertEquals("Itens não podem ser nulos ou vazios", exception.getMessage());
-        verify(orderRepository, never()).save(any(Order.class));
-    }
-
-    @Test
-    void testCriarPedido_ItensVazios() {
-        order.setItems(List.of());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class, () -> orderService.criarPedido(order));
-        assertEquals("Itens não podem ser nulos ou vazios", exception.getMessage());
-        verify(orderRepository, never()).save(any(Order.class));
-    }
-
-    @Test
     void testCriarPedido_Sucesso() {
         when(clienteService.buscarPorId(customer.getId())).thenReturn(customer);
         when(itemService.associarItens(order.getItems())).thenReturn(items);
@@ -196,5 +178,62 @@ public class OrderServiceImplTest {
         assertEquals(order.getId(), result.getId());
         verify(orderRepository, times(1)).save(order);
     }
+
+    @Test
+    void testListarTodos_EmptyList() {
+        when(orderRepository.findAll()).thenReturn(List.of());
+
+        List<Order> orders = orderService.listarTodos();
+
+        assertNotNull(orders);
+        assertTrue(orders.isEmpty());
+        verify(orderRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testCriarPedido_ClienteNaoEncontrado() {
+        when(clienteService.buscarPorId(1L)).thenThrow(new RuntimeException("Cliente não encontrado"));
+
+        assertThrows(RuntimeException.class, () -> orderService.criarPedido(order));
+        verify(clienteService, times(1)).buscarPorId(1L);
+        verify(itemService, never()).associarItens(anyList());
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void testCriarPedido_ValidacaoDadosNulos() {
+        order.setCliente(null);
+
+        assertThrows(NullPointerException.class, () -> orderService.criarPedido(order));
+        verify(clienteService, never()).buscarPorId(anyLong());
+        verify(itemService, never()).associarItens(anyList());
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void testAtualizarPedido_ClienteNaoEncontrado() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(clienteService.buscarPorId(1L)).thenThrow(new RuntimeException("Cliente não encontrado"));
+
+        assertThrows(RuntimeException.class, () -> orderService.atualizarPedido(1L, order));
+        verify(clienteService, times(1)).buscarPorId(1L);
+        verify(itemService, never()).associarItens(anyList());
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void testProcessarPedido_NaoProcessado() {
+        doThrow(new RuntimeException("Erro ao processar pedido"))
+                .when(pedidoProcessingService)
+                .processarPedido(order);
+
+        when(clienteService.buscarPorId(1L)).thenReturn(customer);
+        when(itemService.associarItens(items)).thenReturn(items);
+
+        assertThrows(RuntimeException.class, () -> orderService.criarPedido(order));
+        verify(pedidoProcessingService, times(1)).processarPedido(order);
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
 }
 

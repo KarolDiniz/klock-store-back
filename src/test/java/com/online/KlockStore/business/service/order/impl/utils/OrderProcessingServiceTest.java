@@ -203,13 +203,52 @@ public class OrderProcessingServiceTest {
         when(estoqueService.verificarEstoque(order)).thenReturn(true);
 
         doThrow(new NotificationException("Serviço de notificação não configurado.")).when(notificacaoService).enviarNotificacao(order);
-
         NotificationException exception = assertThrows(NotificationException.class, () -> {
             orderProcessingService.processarPedido(order);
         });
-
         assertEquals("Erro ao enviar notificação para o pedido: 1", exception.getMessage());
     }
+
+    @Test
+    void testProcessarPedido_QuantidadeNegativa() {
+        Item item = new Item();
+        item.setPreco(50.0);
+        item.setQuantidade(-5);
+        order.setItems(Collections.singletonList(item));
+
+        doThrow(new IllegalArgumentException("Quantidade de itens inválida.")).when(pedidoValidator).validar(order);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            orderProcessingService.processarPedido(order);
+        });
+
+        assertEquals("Quantidade de itens inválida.", exception.getMessage());
+        verify(pedidoValidator).validar(order);
+    }
+    @Test
+    void testProcessarPedido_ItensNulos() {
+        order.setItems(Arrays.asList(null, new Item()));
+        doThrow(new IllegalArgumentException("Pedido contém itens inválidos.")).when(pedidoValidator).validar(order);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            orderProcessingService.processarPedido(order);
+        });
+
+        assertEquals("Pedido contém itens inválidos.", exception.getMessage());
+        verify(pedidoValidator).validar(order);
+    }
+
+    @Test
+    void testProcessarPedido_NotificacaoAssincrona() {
+        when(estoqueService.verificarEstoque(order)).thenReturn(true);
+        doAnswer(invocation -> {
+            Order pedido = invocation.getArgument(0);
+            assertNotNull(pedido);
+            return null;
+        }).when(notificacaoService).enviarNotificacao(order);
+        orderProcessingService.processarPedido(order);
+        verify(notificacaoService).enviarNotificacao(order);
+    }
+
 
 }
 
