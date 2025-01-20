@@ -24,8 +24,8 @@ class OrderValidatorTest {
 
     @Test
     void testValidarPedidoValido() {
-        Item item1 = new Item("Produto 1", 10.0, 5, 10);  // Preço: 10.0, Quantidade: 5, Estoque: 10
-        Item item2 = new Item("Produto 2", 20.0, 2, 3);   // Preço: 20.0, Quantidade: 2, Estoque: 3
+        Item item1 = new Item("Produto 1", 10.0, 5, 10);
+        Item item2 = new Item("Produto 2", 20.0, 2, 3);
 
         Customer cliente = new Customer("Cliente 1", false);
         order = new Order(cliente, Arrays.asList(item1, item2));
