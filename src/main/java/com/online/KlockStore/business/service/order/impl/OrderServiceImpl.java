@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
         order.setCliente(customer);
         List<Item> items = itemService.associarItens(order.getItems());
         order.setItems(items);
-        orderProcessingService.processarPedido(order);
+        processarPedido(order);
         return orderRepository.save(order);
     }
 
