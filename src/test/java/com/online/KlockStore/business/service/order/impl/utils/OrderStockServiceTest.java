@@ -22,8 +22,8 @@ class OrderStockServiceTest {
 
     @Test
     void testVerificarEstoqueSuficiente() {
-        Item item1 = new Item("Produto 1", 10.0, 5, 10);  // Preço: 10.0, Quantidade: 5, Estoque: 10
-        Item item2 = new Item("Produto 2", 20.0, 2, 3);   // Preço: 20.0, Quantidade: 2, Estoque: 3
+        Item item1 = new Item("Produto 1", 10.0, 5, 10);
+        Item item2 = new Item("Produto 2", 20.0, 2, 3);
 
         Customer cliente = new Customer("Cliente 1", false);
         order = new Order(cliente, Arrays.asList(item1, item2));
@@ -35,8 +35,8 @@ class OrderStockServiceTest {
 
     @Test
     void testVerificarEstoqueInsuficiente() {
-        Item item1 = new Item("Produto 1", 10.0, 5, 4);  // Preço: 10.0, Quantidade: 5, Estoque: 4
-        Item item2 = new Item("Produto 2", 20.0, 2, 3);  // Preço: 20.0, Quantidade: 2, Estoque: 3
+        Item item1 = new Item("Produto 1", 10.0, 5, 4);
+        Item item2 = new Item("Produto 2", 20.0, 2, 3);
 
         Customer cliente = new Customer("Cliente 1", false);
         order = new Order(cliente, Arrays.asList(item1, item2));
@@ -48,8 +48,8 @@ class OrderStockServiceTest {
 
     @Test
     void testVerificarEstoqueQuantidadeIgualEstoque() {
-        Item item1 = new Item("Produto 1", 10.0, 5, 5);  // Preço: 10.0, Quantidade: 5, Estoque: 5
-        Item item2 = new Item("Produto 2", 20.0, 2, 2);  // Preço: 20.0, Quantidade: 2, Estoque: 2
+        Item item1 = new Item("Produto 1", 10.0, 5, 5);
+        Item item2 = new Item("Produto 2", 20.0, 2, 2);
 
         Customer cliente = new Customer("Cliente 1", false);
         order = new Order(cliente, Arrays.asList(item1, item2));
@@ -69,8 +69,8 @@ class OrderStockServiceTest {
 
     @Test
     void testVerificarEstoqueComQuantidadeMaiorQueEstoque() {
-        Item item1 = new Item("Produto 1", 10.0, 10, 5);  // Preço: 10.0, Quantidade: 10, Estoque: 5
-        Item item2 = new Item("Produto 2", 20.0, 2, 3);   // Preço: 20.0, Quantidade: 2, Estoque: 3
+        Item item1 = new Item("Produto 1", 10.0, 10, 5);
+        Item item2 = new Item("Produto 2", 20.0, 2, 3);
 
         Customer cliente = new Customer("Cliente 1", false);
         order = new Order(cliente, Arrays.asList(item1, item2));

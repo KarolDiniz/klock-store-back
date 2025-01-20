@@ -144,7 +144,7 @@ public class OrderServiceImplTest {
 
         assertThrows(RuntimeException.class, () -> orderService.criarPedido(order));
         verify(itemService, times(1)).associarItens(items);
-        verify(orderRepository, never()).save(any(Order.class));  // O pedido não deve ser salvo
+        verify(orderRepository, never()).save(any(Order.class));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class OrderServiceImplTest {
 
         assertThrows(RuntimeException.class, () -> orderService.atualizarPedido(1L, order));
         verify(itemService, times(1)).associarItens(items);
-        verify(orderRepository, never()).save(any(Order.class));  // O pedido não deve ser salvo
+        verify(orderRepository, never()).save(any(Order.class));
     }
 
     @Test
@@ -164,7 +164,7 @@ public class OrderServiceImplTest {
 
         assertThrows(OrderNotFoundException.class, () -> orderService.excluirPedido(1L));
         verify(orderRepository, times(1)).findById(1L);
-        verify(orderRepository, never()).delete(any(Order.class));  // O pedido não deve ser excluído
+        verify(orderRepository, never()).delete(any(Order.class));
     }
 
     @Test
@@ -173,28 +173,28 @@ public class OrderServiceImplTest {
 
         OrderNotFoundException exception = assertThrows(OrderNotFoundException.class, () -> orderService.criarPedido(order));
         assertEquals("Itens não podem ser nulos ou vazios", exception.getMessage());
-        verify(orderRepository, never()).save(any(Order.class));  // O pedido não deve ser salvo
+        verify(orderRepository, never()).save(any(Order.class));
     }
 
     @Test
     void testCriarPedido_ItensVazios() {
-        order.setItems(List.of());  // Simulando pedido com itens vazios
+        order.setItems(List.of());
 
         OrderNotFoundException exception = assertThrows(OrderNotFoundException.class, () -> orderService.criarPedido(order));
         assertEquals("Itens não podem ser nulos ou vazios", exception.getMessage());
-        verify(orderRepository, never()).save(any(Order.class));  // O pedido não deve ser salvo
+        verify(orderRepository, never()).save(any(Order.class));
     }
 
     @Test
     void testCriarPedido_Sucesso() {
-        when(clienteService.buscarPorId(customer.getId())).thenReturn(customer);  // Cliente encontrado
-        when(itemService.associarItens(order.getItems())).thenReturn(items);  // Itens associados com sucesso
-        when(orderRepository.save(order)).thenReturn(order);  // Pedido salvo com sucesso
+        when(clienteService.buscarPorId(customer.getId())).thenReturn(customer);
+        when(itemService.associarItens(order.getItems())).thenReturn(items);
+        when(orderRepository.save(order)).thenReturn(order);
 
         Order result = orderService.criarPedido(order);
         assertNotNull(result);
         assertEquals(order.getId(), result.getId());
-        verify(orderRepository, times(1)).save(order);  // O pedido deve ser salvo
+        verify(orderRepository, times(1)).save(order);
     }
 }
 
