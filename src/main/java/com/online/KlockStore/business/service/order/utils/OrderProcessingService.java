@@ -28,17 +28,13 @@ public class OrderProcessingService {
     }
 
     public void processarPedido(Order pedido) {
-        validarPedido(pedido);
+        orderValidator.validar(pedido);
         double total = calcularTotal(pedido);
         double totalComDesconto = calcularDesconto(pedido, total);
         verificarEstoque(pedido);
 
         definirDataEntrega(pedido);
         enviarNotificacao(pedido);
-    }
-
-    private void validarPedido(Order pedido) {
-        orderValidator.validar(pedido);
     }
 
     private double calcularTotal(Order pedido) {
