@@ -5,6 +5,8 @@ import com.online.KlockStore.model.entities.Item;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Component
 public class ItemValidator {
 
@@ -23,6 +25,18 @@ public class ItemValidator {
         }
         if (item.getEstoque() < 0) {
             throw new ItemValidationException("O estoque do item não pode ser negativo.");
+        }
+    }
+
+    public void validarId(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID inválido.");
+        }
+    }
+
+    public void validarItensPedido(List<Item> itensPedido) {
+        if (itensPedido == null || itensPedido.isEmpty()) {
+            throw new IllegalArgumentException("A lista de itens do pedido não pode ser nula ou vazia.");
         }
     }
 }
