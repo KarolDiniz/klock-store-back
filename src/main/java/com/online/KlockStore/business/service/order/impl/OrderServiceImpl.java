@@ -22,18 +22,15 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerService customerService;
     private final ItemService itemService;
     private final OrderProcessingService orderProcessingService;
-    private final OrderValidator orderValidator;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             CustomerService customerService,
                             ItemService itemService,
-                            OrderProcessingService orderProcessingService,
-                            OrderValidator orderValidator) {
+                            OrderProcessingService orderProcessingService) {
         this.orderRepository = orderRepository;
         this.customerService = customerService;
         this.itemService = itemService;
         this.orderProcessingService = orderProcessingService;
-        this.orderValidator = orderValidator;
     }
 
     @Override
@@ -49,7 +46,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order criarPedido(Order order) {
-        orderValidator.validar(order);
         Customer customer = customerService.buscarPorId(order.getCliente().getId());
         order.setCliente(customer);
         List<Item> items = itemService.associarItens(order.getItems());
@@ -61,7 +57,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order atualizarPedido(Long id, Order updatedOrder) {
         Order existingOrder = buscarPorId(id);
-        orderValidator.validar(updatedOrder);
         atualizarDadosPedido(existingOrder, updatedOrder);
         processarPedido(existingOrder);
         return orderRepository.save(existingOrder);
